@@ -24,7 +24,7 @@ for v in database:
 action_set = list(sorted(action_set))
 label_count = len(label_set) # the number of the task labels
 action_count = action_set[-1] # the number of the action labels
-matrix = np.zeros((label_count,action_count))
+matrix = np.zeros((label_count,action_count+1))
 
 for v in database:
 	for an in database[v]["annotation"]:
