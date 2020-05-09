@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser(
 	description="Evaluate detection performance metrics")
 parser.add_argument('dataset', type=str, choices=['activitynet1.2', 'thumos14', 'coin'])
 parser.add_argument('detection_pickles', type=str, nargs='+')
+parser.add_argument('--tc', default=False, action='store_true', help='Whether to read scores with TC done')
 parser.add_argument('--nms_threshold', type=float, default=None)
 parser.add_argument('--no_regression', default=False, action="store_true")
 parser.add_argument('--softmax_before_filter', default=False, action="store_true")
@@ -117,7 +118,10 @@ def gen_detection_results(video_id, score_tp):
 				print(i, rel_prop.shape, combined_scores.shape, reg_scores.shape)
 				raise
 	elif cls_score_dict is None:
-		combined_scores = softmax(score_tp[1][:, 1:]) * np.exp(score_tp[2])
+		if args.tc:
+			combined_scores = score_tp[1]
+		else:
+			combined_scores = softmax(score_tp[1][:, 1:]) * np.exp(score_tp[2])
 		keep_idx = np.argsort(combined_scores.ravel())[-top_k:]
 		for k in keep_idx:
 			cls = k % num_class
